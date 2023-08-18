@@ -82,13 +82,7 @@ typedef struct specifier
 	int (*f)(va_list, params_t *);
 } specifier_t;
 
-typedef struct
-{
-  int width;
-  int precision;
-  int flags;
-  char specifier;
-} params_t;
+
 
 /* _put.c */
 int _puts(char *str);
