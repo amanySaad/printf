@@ -82,7 +82,6 @@ typedef struct specifier
 	int (*f)(va_list, params_t *);
 } specifier_t;
 
-
 /**
  * struct parameters - struct containing information
  * about printf parameters
