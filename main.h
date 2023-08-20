@@ -83,6 +83,22 @@ typedef struct specifier
 } specifier_t;
 
 
+/**
+ * struct parameters - struct containing information
+ * about printf parameters
+ * @flags: flags used to modify the output format
+ * @width: minimum field width to print
+ * @precision: precision of the output format
+ * @length: length modifier for integer types
+ */
+struct parameters
+{
+	char flags;
+	int width;
+	int precision;
+	char length;
+};
+
 
 /* _put.c */
 int _puts(char *str);
