@@ -134,7 +134,7 @@ int print_number_left_shift(char *str, params_t *params);
 /* printf_params.c */
 void init_params(params_t *params, va_list ap);
 
-/* get_precision.c */
+/* pf_str_fields.c */
 char *get_precision(char *p, params_t *params, va_list ap);
 
 /* prinf.c */
