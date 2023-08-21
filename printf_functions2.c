@@ -57,37 +57,37 @@ char *convert(long int num, int base, int flags, params_t *params)
  * with the specified parameters.
  *
  * @ap: The variable argument list containing the value to print.
- * @params: Pointer to the parameters struct
+ * @params_t: Pointer to the parameters struct
  * containing the width and precision parameters.
  * Return: The number of characters printed.
  */
-int print_unsigned(va_list ap, params_t *params)
+int print_unsigned(va_list ap, params_t *params_t)
 {
 	unsigned int num = va_arg(ap, unsigned int);
-	char *str = convert(num, 10, 0, params);
+	char *str = convert(num, 10, 0, params_t);
 	int len = strlen(str);
-	int width = params->width;
+	int width = params_t->width;
 
 	if (len >= width)
 	{
-	printf("%s", str);
+		printf("%s", str);
 	}
 	else
 	{
-	int padding = width - len;
+		int padding = width - len;
 
-	if (params->precision >= 0)
-	{
-	padding = params->precision - len;
-	}
-	if (padding > 0)
-	{
-	for (int i = 0; i < padding; i++)
-	{
-	printf(" ");
-	}
-	}
-	printf("%s", str);
+		if (params_t->precision >= 0)
+		{
+			padding = params_t->precision - len;
+		}
+		if (padding > 0)
+		{
+			for (int i = 0; i < padding; i++)
+			{
+				printf(" ");
+			}
+		}
+		printf("%s", str);
 	}
 	return (len);
 }
