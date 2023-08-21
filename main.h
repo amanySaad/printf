@@ -10,9 +10,17 @@
 #include <ctype.h>
 #include <stdint.h>
 
-#define BUF_SIZE 1024
+#define BUFF_SIZE 1024
 #define BUF_FLUSH -1
 
+#define F_MINUS 1
+#define F_PLUS 2
+#define F_ZERO 4
+#define F_HASH 8
+#define F_SPACE 16
+
+#define S_LONG 1
+#define S_SHORT 2
 
 #define NULL_STRING "(null)"
 
