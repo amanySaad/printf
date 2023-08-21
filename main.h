@@ -63,7 +63,7 @@
  */
 typedef struct params_s
 {
-	unsigned int unsign			: 1;
+	unsigned int unsign		: 1;
 
 	unsigned int plus_flag		: 1;
 	unsigned int space_flag		: 1;
@@ -73,6 +73,7 @@ typedef struct params_s
 
 	unsigned int width;
 	unsigned int precision;
+	unsigned int left_align		: 1;
 
 	unsigned int h_modifier		: 1;
 	unsigned int l_modifier		: 1;
@@ -106,6 +107,7 @@ typedef struct parameters
 	char length;
 } parameters_t;
 params_t my_params = {0, 0, 0, 0};
+params_t my_params = { .zero_flag = 0, .width = 0, .precision = 0, .left_align = 0 };
 
 /* _put.c */
 int _puts(char *str);
@@ -144,8 +146,8 @@ char buffer[], int flags, char flag_ch, int width, int precision, int size);
 
 /* printf_printers.c */
 int print_from_to(char *start, char *stop, char *except);
-int print_rev(va_list ap, params_t *params);
-int print_rot13(va_list ap, params_t *params);
+int print_rev(va_list ap);
+int print_rot13(va_list ap);
 
 /* print_number.c */
 int _isdigit(int c);
