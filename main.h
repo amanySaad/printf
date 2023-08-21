@@ -10,7 +10,7 @@
 #include <ctype.h>
 #include <stdint.h>
 
-#define OUTPUT_BUF_SIZE 1024
+#define BUF_SIZE 1024
 #define BUF_FLUSH -1
 
 
@@ -53,7 +53,7 @@
  * @l_modifier: on if l_modifier is specified
  *
  */
-typedef struct parameters
+typedef struct params_s
 {
 	unsigned int unsign			: 1;
 
@@ -90,14 +90,14 @@ typedef struct specifier
  * @precision: precision of the output format
  * @length: length modifier for integer types
  */
-struct parameters
+typedef struct parameters
 {
 	char flags;
 	int width;
 	int precision;
 	char length;
-};
-
+} parameters_t;
+params_t my_params = {0, 0, 0, 0};
 
 /* _put.c */
 int _puts(char *str);
@@ -150,9 +150,12 @@ int print_number_left_shift(char *str, params_t *params);
 void init_params(params_t *params, va_list ap);
 
 /* pf_str_fields.c */
-char *get_precision(char *p, params_t *params, va_list ap);
+/*char *get_precision(char *p, params_t *params, va_list ap);*/
 
 /* prinf.c */
 int _printf(const char *format, ...);
+void print_buffer(char buffer[], int *buff_ind);
+int handle_print(const char *format, int *i, va_list list,
+	char buffer[], int flags, int width, int precision, int size);
 
 #endif
