@@ -106,8 +106,6 @@ typedef struct parameters
 	int precision;
 	char length;
 } parameters_t;
-params_t my_params = {0, 0, 0, 0};
-params_t my_params = { .zero_flag = 0, .width = 0, .precision = 0, .left_align = 0 };
 
 /* _put.c */
 int _puts(char *str);
@@ -122,7 +120,7 @@ int print_S(va_list ap, params_t *params);
 
 /* printf_functions2.c */
 char *convert(long int num, int base, int flags, params_t *params);
-int print_unsigned(va_list ap, params_t *params);
+int print_unsigned(va_list ap);
 int print_address(va_list ap, params_t *params);
 
 /* printf_specifiers.c */
