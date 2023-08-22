@@ -1,132 +1,159 @@
 #include "main.h"
-/**
- * get_flags - Calculates active flags
- * @format: Formatted string in which to print the arguments
- * @i: take a parameter.
- * Return: Flags:
+/*
+ *Get specifier function:
+ *Takes a format specifier character and returns a pointer to the appropriate
+ *printing function. If the specifier is invalid, it returns NULL.
  */
-int get_flags(const char *format, int *i)
+int(*get_specifier(char *s))(va_list ap, params_t *params)
 {
-	/* - + 0 # ' ' */
-	/* 1 2 4 8  16 */
-	int j, curr_i;
-	int flags = 0;
-	const char FLAGS_CH[] = {'-', '+', '0', '#', ' ', '\0'};
-	const int FLAGS_ARR[] = {F_MINUS, F_PLUS, F_ZERO, F_HASH, F_SPACE, 0};
-
-	for (curr_i = *i + 1; format[curr_i] != '\0'; curr_i++)
+	switch (*s)
 	{
-		for (j = 0; FLAGS_CH[j] != '\0'; j++)
-			if (format[curr_i] == FLAGS_CH[j])
+		case 'd':
+		case 'i':
+			return (print_decimal);
+		case 'u':
+			return (print_unsigned_decimal);
+		case 'o':
+			return (print_octal);
+		case 'x':
+		case 'X':
+			return (print_hexadecimal);
+		case 'c':
+			return (print_character);
+		case 's':
+			return (print_string);
+		default:
+			return (NULL);
+	}
+}
+
+/*
+ *Get print function:
+ *Takes a format string, a va_list of arguments, and a params_t struct.
+ *Returns the number of characters printed, or -1 if an error occurred.
+ */
+int
+get_print_func(char *s, va_list ap, params_t *params)
+{
+	int count = 0;
+	if (*s == 'c')
+	{
+		char c = (char) va_arg(ap, int);
+		putchar(c);
+		count++;
+	}
+	else if (*s == 's')
+	{
+		char *str = va_arg(ap, char *);
+		count += printf("%s", str);
+	}
+
+	return (count);
+}
+
+/*
+ *Get flag function:
+ *Takes a character and a params_t struct and sets the appropriate flag in the
+ *struct if the character is a valid flag. Returns the number of characters consumed.
+ */
+int
+get_flag(char *s, params_t *params)
+{
+	switch (*s)
+	{
+		case '-':
+			params->flags |= LEFT_JUSTIFY;
+			return (1);
+		case '+':
+			params->flags |= SHOW_SIGN;
+			return (1);
+		case ' ':
+			params->flags |= SPACE_SIGN;
+			return (1);
+		case '#':
+			params->flags |= ALT_FORM;
+			return (1);
+		case '0':
+			params->flags |= ZERO_PAD;
+			return (1);
+		default:
+			return (0);
+	}
+}
+
+/*
+ *Get modifier function:
+ *Takes a character and a params_t struct and sets the appropriate modifier in
+ *the struct if the character is a valid modifier. Returns the number of characters consumed.
+ */
+int
+get_modifier(char *s, params_t *params)
+{
+	switch (*s)
+	{
+		case 'h':
+			if (*(s + 1) == 'h')
 			{
-				flags |= FLAGS_ARR[j];
-				break;
+				params->flags |= CHAR_MODIFIER;
+				return (2);
+			}
+			else
+			{
+				params->flags |= SHORT_MODIFIER;
+				return (1);
 			}
 
-		if (FLAGS_CH[j] == 0)
-			break;
+		case 'l':
+			if (*(s + 1) == 'l')
+			{
+				params->flags |= LONG_LONG_MODIFIER;
+				return (2);
+			}
+			else
+			{
+				params->flags |= LONG_MODIFIER;
+				return (1);
+			}
+
+		case 'j':
+			params->flags |= INTMAX_MODIFIER;
+			return (1);
+		case 'z':
+			params->flags |= SIZE_MODIFIER;
+			return (1);
+		case 't':
+			params->flags |= PTRDIFF_MODIFIER;
+			return (1);
+		default:
+			return (0);
 	}
-
-	*i = curr_i - 1;
-
-	return (flags);
 }
 
-/**
- * get_precision - Calculates the precision for printing
- * @format: Formatted string in which to print the arguments
- * @i: List of arguments to be printed.
- * @list: list of arguments.
- *
- * Return: Precision.
+/*
+ *Get width function:
+ *Takes a format string, a va_list of arguments, and a params_t struct.
+ *Parses the width specifier and returns a pointer to the next character in the
+ *string, after consuming any width specifier characters.
+ *If no width specifier is present, it returns the original string pointer.
  */
-int get_precision(const char *format, int *i, va_list list)
-{
-	int curr_i = *i + 1;
-	int precision = -1;
-
-	if (format[curr_i] != '.')
-		return (precision);
-
-	precision = 0;
-
-	for (curr_i += 1; format[curr_i] != '\0'; curr_i++)
+char *
+	get_width(char *s, params_t *params, va_list ap)
 	{
-		if (is_digit(format[curr_i]))
+		char *width_str = NULL;
+		if (*s >= '0' && *s <= '9')
 		{
-			precision *= 10;
-			precision += format[curr_i] - '0';
+			while (*s >= '0' && *s <= '9')
+				s++;
+			width_str = malloc(s - width_str + 1);
+			strncpy(width_str, s, s - width_str);;
+			width_str[s - width_str] = '\0';
 		}
-		else if (format[curr_i] == '*')
+		else if (*s == '*')
 		{
-			curr_i++;
-			precision = va_arg(list, int);
-			break;
+			int width = va_arg(ap, int);
+			width_str = malloc(12);
+			sprintf(width_str, "%d", width);
 		}
-		else
-			break;
+
+		return (width_str);
 	}
-
-	*i = curr_i - 1;
-
-	return (precision);
-}
-/**
- * get_size - Calculates the size to cast the argument
- * @format: Formatted string in which to print the arguments
- * @i: List of arguments to be printed.
- *
- * Return: Precision.
- */
-int get_size(const char *format, int *i)
-{
-	int curr_i = *i + 1;
-	int size = 0;
-
-	if (format[curr_i] == 'l')
-		size = S_LONG;
-	else if (format[curr_i] == 'h')
-		size = S_SHORT;
-
-	if (size == 0)
-		*i = curr_i - 1;
-	else
-		*i = curr_i;
-
-	return (size);
-}
-/**
- * get_width - Calculates the width for printing
- * @format: Formatted string in which to print the arguments.
- * @i: List of arguments to be printed.
- * @list: list of arguments.
- *
- * Return: width.
- */
-int get_width(const char *format, int *i, va_list list)
-{
-	int curr_i;
-	int width = 0;
-
-	for (curr_i = *i + 1; format[curr_i] != '\0'; curr_i++)
-	{
-		if (is_digit(format[curr_i]))
-		{
-			width *= 10;
-			width += format[curr_i] - '0';
-		}
-		else if (format[curr_i] == '*')
-		{
-			curr_i++;
-			width = va_arg(list, int);
-			break;
-		}
-		else
-			break;
-	}
-
-	*i = curr_i - 1;
-
-	return (width);
-}
-
