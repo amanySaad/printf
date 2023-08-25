@@ -1,20 +1,7 @@
 #include "main.h"
-#include <stdarg.h>
 #include <stdio.h>
-
-/**
- * _print_char - prints a single character.
- * @args: A va_list containing the argument to print.
- *
- * Return: The number of characters printed.
- */
-int _print_char(va_list args)
-{
-	char c = va_arg(args, int);
-
-	putchar(c);
-	return (1);
-}
+#include <stdarg.h>
+#include <unistd.h>
 
 /**
  * _print_string - prints a string.
@@ -29,7 +16,7 @@ int _print_string(va_list args)
 
 	while (*s)
 	{
-		putchar(*s);
+		write(1, s, 1);
 		s++;
 		count++;
 	}
@@ -46,7 +33,7 @@ int _print_string(va_list args)
 int _print_percent(va_list args)
 {
 	(void)args;
-	putchar('%');
+	write(1, "%", 1);
 	return (1);
 }
 
@@ -71,8 +58,7 @@ int _handle_specifier(char specifier, va_list args)
 			return (_print_percent(args));
 
 		default:
-			putchar('%');
-			putchar(specifier);
+			_print_char(args, specifier);
 			return (2);
 	}
 }
@@ -86,9 +72,24 @@ int _handle_specifier(char specifier, va_list args)
 int _printf(const char *format, ...)
 {
 	va_list args;
-	int count;
+	int count = 0;
+	int i;
 
 	va_start(args, format);
+
+	for (i = 0; format && format[i]; i++)
+	{
+		if (format[i] == '%')
+		{
+			i++;
+			count += _handle_specifier(format[i], args);
+		}
+		else
+		{
+			write(1, &format[i], 1);
+			count++;
+		}
+	}
 
 	va_end(args);
 
