@@ -46,7 +46,6 @@ int _printf(const char *format, ...);
 int format_parser(const char *format, va_list args);
 int print_char(va_list args);
 int print_string(va_list args);
-int print_int(va_list args);
 int count_digits(int n);
 int power(int base, int exponent);
 int print_binary(va_list args);
@@ -54,8 +53,7 @@ int print_unsigned(va_list args);
 int print_octal(va_list args);
 int print_hex(va_list args, int uppercase);
 int print_number(char *buffer, int n);
-int print_int(va_list args,
-	char *buffer, int *buffer_index, const char *format);
+int print_int(va_list args);
 int print_custom_string(va_list args, char *buffer,
 	int *buffer_index);
 int print_pointer(va_list args, char *buffer,
@@ -69,7 +67,7 @@ int print_int_with_length_width_precision_and_flags
 	(va_list args, char *buffer, int *buffer_index,
 		int length, int width, int precision, int flags);
 void my_printf(const char *format, ...);
-void print_reversed_string(const char *format, ...);
+void print_reversed_string(char *format, ...);
 char *convert(long int num, int base, int flags, int precision);
 int print_rot13_string(va_list args, char *buffer,
 	int *buffer_index);
